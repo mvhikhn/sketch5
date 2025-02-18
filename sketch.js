@@ -4,9 +4,12 @@ let bgCol = cols[0];
 let lineCol = cols.splice(1, cols.length - 1);
 
 function setup() {
-  createCanvas(windowWidth, windowHeight, WEBGL);
-  let dep = max(width, height);
-  ortho(-width / 2, width / 2, -height / 2, height / 2, -dep * 3, dep * 3);
+  const canvas = createCanvas(windowWidth, windowHeight, WEBGL);
+  canvas.elt.style.display = 'block';
+  canvas.elt.style.maxWidth = '100%';
+  canvas.elt.style.height = 'auto';
+  resizeCanvas(windowWidth, windowHeight);
+  orthoSetup();
 }
 
 function draw() {
@@ -18,13 +21,11 @@ function draw() {
   let span = maxDim / num;
   rotateX(-PI / 5);
   rotateY(-PI / 6);
-
   push();
   stroke(0);
   noFill();
   box(maxDim);
   pop();
-
   let count = 0;
   for (let z = -maxDim / 2; z < maxDim / 2; z += span) {
     let radOffset = map(z, -maxDim / 2, maxDim / 2, 0, TAU);
@@ -52,7 +53,6 @@ function wavedPlane(w, h, waveHeightRatio, isStroke) {
   const vertNum = 100;
   let fr = (frameCount % cycle) / cycle;
   const span = w / vertNum;
-
   if (isStroke) beginShape();
   else beginShape(TRIANGLE_STRIP);
   for (let x = -w / 2; x <= w / 2; x += span) {
@@ -60,19 +60,17 @@ function wavedPlane(w, h, waveHeightRatio, isStroke) {
     let maxWaveH = h * 0.5 * waveHeightRatio;
     let waveH = sin(fr * TAU + radOffset) * maxWaveH;
     let y = waveH - maxWaveH;
-
     if (abs(y) > h * 0.5) {
       y = -y + random(-5, 5);
     }
-
+    
     if (abs(x) > w * 0.5) {
       x = -x + random(-5, 5);
     }
-
+    
     if (!isStroke) vertex(x, h, 0);
     vertex(x, y, 0);
   }
-
   if (!isStroke) vertex(w / 2, h, 0);
   endShape();
 }
@@ -85,4 +83,15 @@ function createCols(_url) {
     arr[i] = '#' + arr[i];
   }
   return arr;
+}
+
+function orthoSetup() {
+  let dep = max(width, height);
+  ortho(-width / 2, width / 2, -height / 2, height / 2, -dep * 3, dep * 3);
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  orthoSetup();
+  background(bgCol);
 }
