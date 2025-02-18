@@ -3,13 +3,16 @@ let cols = createCols("https://coolors.co/fed9ed-e7bcde-bb9cc0-67729d");
 let bgCol = cols[0];
 let lineCol = cols.splice(1, cols.length - 1);
 
+let targetWidth = 800;
+let targetHeight = 800;
+let canvas;
+
 function setup() {
-  const canvas = createCanvas(windowWidth, windowHeight, WEBGL);
+  canvas = createCanvas(targetWidth, targetHeight, WEBGL);
   canvas.elt.style.display = 'block';
   canvas.elt.style.maxWidth = '100%';
   canvas.elt.style.height = 'auto';
-  resizeCanvas(windowWidth, windowHeight);
-  orthoSetup();
+  customResizeCanvas(windowWidth, windowHeight);
 }
 
 function draw() {
@@ -91,7 +94,35 @@ function orthoSetup() {
 }
 
 function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
+  customResizeCanvas(windowWidth, windowHeight);
+  orthoSetup();
+  background(bgCol);
+}
+
+function customResizeCanvas(w, h) {
+  let aspectRatio = targetWidth / targetHeight;
+  let newWidth, newHeight;
+
+  if (w / h > aspectRatio) {
+    newHeight = h;
+    newWidth = h * aspectRatio;
+  } else {
+    newWidth = w;
+    newHeight = w / aspectRatio;
+  }
+
+  // Center the canvas
+  let offsetX = (w - newWidth) / 2;
+  let offsetY = (h - newHeight) / 2;
+
+  // Apply the new size and position
+  resizeCanvas(newWidth, newHeight);
+  if (canvas && canvas.elt) {
+    canvas.elt.style.position = 'absolute';
+    canvas.elt.style.left = `${offsetX}px`;
+    canvas.elt.style.top = `${offsetY}px`;
+  }
+
   orthoSetup();
   background(bgCol);
 }
